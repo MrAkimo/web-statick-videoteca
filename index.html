@@ -1,0 +1,462 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Videoteca de Baile</title>
+
+  <style>
+    :root{
+      --bg:#0b0d12;
+      --panel:#121623;
+      --panel2:#0f1320;
+      --text:#e9ecf1;
+      --muted:#a9b1c3;
+      --border:rgba(255,255,255,.08);
+      --shadow: 0 10px 30px rgba(0,0,0,.35);
+      --radius:16px;
+    }
+
+    *{ box-sizing:border-box; }
+
+    body{
+      margin:0;
+      font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial;
+      background: radial-gradient(1200px 600px at 10% 0%, rgba(95, 135, 255,.18), transparent 55%),
+                  radial-gradient(900px 500px at 95% 10%, rgba(255, 120, 190,.12), transparent 50%),
+                  var(--bg);
+      color:var(--text);
+    }
+
+    .container{
+      width:min(1200px, 92vw);
+      margin: 28px auto 60px;
+    }
+
+    header{
+      position: sticky;
+      top: 12px;
+      z-index: 5;
+      display:flex;
+      flex-direction:column;
+      gap:14px;
+      padding:18px;
+      background: linear-gradient(180deg, rgba(255,255,255,.05), rgba(255,255,255,.02));
+      border:1px solid var(--border);
+      border-radius: var(--radius);
+      backdrop-filter: blur(10px);
+      box-shadow: var(--shadow);
+    }
+
+    h1{
+      margin:0;
+      font-size:22px;
+    }
+
+    .meta{
+      font-size:13px;
+      color:var(--muted);
+    }
+
+    .filters{
+      display:grid;
+      grid-template-columns: 1.4fr repeat(6, 1fr);
+      gap:10px;
+    }
+
+    @media (max-width: 1000px){
+      .filters{ grid-template-columns: 1fr 1fr; }
+    }
+
+    .field{
+      display:flex;
+      flex-direction:column;
+      gap:6px;
+    }
+
+    label{
+      font-size:12px;
+      color:var(--muted);
+    }
+
+    input, select{
+      padding:10px 12px;
+      border-radius:12px;
+      border:1px solid var(--border);
+      background: rgba(0,0,0,.35);
+      color:var(--text);
+    }
+
+    .actions{
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      flex-wrap:wrap;
+      gap:10px;
+    }
+
+    button{
+      padding:10px 14px;
+      border-radius:12px;
+      border:1px solid var(--border);
+      background: rgba(255,255,255,.08);
+      color:var(--text);
+      cursor:pointer;
+    }
+
+    button:hover{ background: rgba(255,255,255,.14); }
+
+    .grid{
+      margin-top:20px;
+      display:grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap:16px;
+    }
+
+    @media (max-width: 900px){
+      .grid{ grid-template-columns: repeat(2, 1fr); }
+    }
+    @media (max-width: 600px){
+      .grid{ grid-template-columns: 1fr; }
+    }
+
+    .card{
+      display:flex;
+      flex-direction:column;
+      background: linear-gradient(180deg, rgba(255,255,255,.04), rgba(255,255,255,.02));
+      border:1px solid var(--border);
+      border-radius: var(--radius);
+      overflow:hidden;
+      box-shadow: var(--shadow);
+      min-height: 420px;
+    }
+
+    .thumb{
+      position:relative;
+      aspect-ratio:16/9;
+      background: var(--panel2);
+    }
+
+    .thumb img{
+      width:100%;
+      height:100%;
+      object-fit:cover;
+    }
+
+    .badge{
+      position:absolute;
+      top:10px;
+      left:10px;
+      padding:6px 10px;
+      border-radius:999px;
+      font-size:12px;
+      background: rgba(0,0,0,.6);
+      border:1px solid rgba(255,255,255,.15);
+    }
+
+    .play{
+      position:absolute;
+      right:12px;
+      bottom:12px;
+      padding:10px 14px;
+      border-radius:999px;
+      background: rgba(0,0,0,.6);
+      border:1px solid rgba(255,255,255,.15);
+      color:var(--text);
+      text-decoration:none;
+      font-size:13px;
+    }
+
+    .body{
+      padding:14px;
+      display:flex;
+      flex-direction:column;
+      gap:8px;
+      flex:1;
+    }
+
+    .body h3{
+      margin:0;
+      font-size:16px;
+    }
+
+    .row{
+      display:flex;
+      gap:8px;
+      flex-wrap:wrap;
+      align-items: center;
+      font-size:12px;
+      color:var(--muted);
+    }
+
+    .pill{
+      padding:4px 8px;
+      border-radius:999px;
+      background: rgba(255,255,255,.07);
+      border:1px solid rgba(255,255,255,.1);
+    }
+
+    .desc{
+      font-size:13px;
+      line-height:1.35;
+      opacity:.9;
+      margin-top:4px;
+    }
+
+    .rating{
+      display:flex;
+      gap:6px;
+      align-items:center;
+      margin-top: 4px;
+    }
+
+    .star{
+      display: flex;
+      width:34px;
+      height:34px;
+      border-radius:12px;
+      justify-content: center;
+      align-items: center;
+      border:1px solid rgba(255,255,255,.15);
+      background: rgba(255,255,255,.06);
+      cursor:pointer;
+      font-size:18px;
+      color:#999;
+    }
+
+    .star.on{ color:#fff; }
+
+    .footer{
+      padding:12px 14px;
+      border-top:1px solid var(--border);
+      font-size:12px;
+      color:var(--muted);
+      display:flex;
+      justify-content:space-between;
+    }
+
+    .empty{
+      margin-top:24px;
+      padding:20px;
+      border:1px dashed rgba(255,255,255,.25);
+      border-radius: var(--radius);
+      color:var(--muted);
+    }
+  </style>
+</head>
+
+<body>
+<div class="container">
+
+  <header>
+    <h1>Videoteca de baile</h1>
+    <div class="meta" id="countMeta">—</div>
+
+    <div class="filters">
+      <div class="field">
+        <label>Buscar</label>
+        <input id="q" type="search" placeholder="bachata, giros, ondas…" />
+      </div>
+
+      <div class="field">
+        <label>Tipo</label>
+        <select id="type"></select>
+      </div>
+
+      <div class="field">
+        <label>Estilo</label>
+        <select id="style"></select>
+      </div>
+
+      <div class="field">
+        <label>Profesor</label>
+        <select id="teacher"></select>
+      </div>
+
+      <div class="field">
+        <label>Nivel</label>
+        <select id="level"></select>
+      </div>
+
+      <div class="field">
+        <label>Puntaje mínimo</label>
+        <select id="minRating">
+          <option value="0">Cualquiera</option>
+          <option value="1">1 ★+</option>
+          <option value="2">2 ★+</option>
+          <option value="3">3 ★+</option>
+          <option value="4">4 ★+</option>
+          <option value="5">5 ★</option>
+        </select>
+      </div>
+
+      <div class="field">
+        <label>Orden</label>
+        <select id="sort">
+          <option value="date_desc">Más reciente</option>
+          <option value="date_asc">Más antiguo</option>
+          <option value="rating_desc">Mejor puntaje</option>
+          <option value="rating_asc">Peor puntaje</option>
+        </select>
+      </div>
+    </div>
+
+    <div class="actions">
+      <button id="reset">Reset filtros</button>
+      <div class="meta" id="activeFilters">—</div>
+    </div>
+  </header>
+
+  <main>
+    <div class="grid" id="grid"></div>
+    <div class="empty" id="empty" style="display:none;">
+      No hay vídeos con esos filtros.
+    </div>
+  </main>
+</div>
+
+<script>
+const RATINGS_KEY = "dance_ratings_v1";
+let VIDEOS = [];
+
+const $ = s => document.querySelector(s);
+
+async function loadVideos(){
+  const res = await fetch("./data/videos.json", { cache: "no-store" });
+  return await res.json();
+}
+
+function unique(list){
+  return [...new Set(list)].sort();
+}
+
+function loadRatings(){
+  return JSON.parse(localStorage.getItem(RATINGS_KEY) || "{}");
+}
+
+function saveRatings(r){
+  localStorage.setItem(RATINGS_KEY, JSON.stringify(r));
+}
+
+function buildSelect(id, values, label){
+  const sel = $(id);
+  sel.innerHTML = `<option value="">${label}</option>`;
+  values.forEach(v=>{
+    sel.innerHTML += `<option value="${v}">${v}</option>`;
+  });
+}
+
+function formatDate(iso){
+      const [y,m,d] = iso.split("-").map(Number);
+      const dt = new Date(y, m-1, d);
+      return dt.toLocaleDateString("es-ES", { year:"numeric", month:"short", day:"2-digit" });
+    }
+
+function render(){
+  const q = $("#q").value.toLowerCase();
+  const type = $("#type").value;
+  const style = $("#style").value;
+  const teacher = $("#teacher").value;
+  const level = $("#level").value;
+  const minRating = +$("#minRating").value;
+  const sort = $("#sort").value;
+
+  const ratings = loadRatings();
+
+  let list = VIDEOS.map(v=>({
+    ...v,
+    _rating: ratings[v.id] ?? v.rating ?? 0
+  }));
+
+  if(q){
+    list = list.filter(v =>
+      (v.title + v.description).toLowerCase().includes(q)
+    );
+  }
+  if(type) list = list.filter(v => v.type === type);
+  if(style) list = list.filter(v => v.style === style);
+  if(teacher) list = list.filter(v => v.teacher === teacher);
+  if(level) list = list.filter(v => v.level === level);
+  list = list.filter(v => v._rating >= minRating);
+
+  if(sort === "date_desc") list.sort((a,b)=>b.date.localeCompare(a.date));
+  if(sort === "date_asc") list.sort((a,b)=>a.date.localeCompare(b.date));
+  if(sort === "rating_desc") list.sort((a,b)=>b._rating - a._rating);
+  if(sort === "rating_asc") list.sort((a,b)=>a._rating - b._rating);
+
+  $("#grid").innerHTML = list.map(v=>`
+    <article class="card" data-id="${v.id}">
+      <div class="thumb">
+        <img src="${v.thumb}">
+        <div class="badge">${v.style}</div>
+        <a class="play" href="${v.videoUrl}" target="_blank">Abrir en Drive</a>
+      </div>
+      <div class="body">
+        <h3>${v.title}</h3>
+        <div class="row">
+          <span class="pill">${v.type}</span>
+          <span class="pill">${v.level}</span>
+          <span class="pill">${v.teacher}</span>
+          <span>📅 ${formatDate(v.date)}</span>
+        </div>
+
+        <div class="rating">
+          ${[1,2,3,4,5].map(i=>`
+            <button class="star ${i<=v._rating?'on':''}" data-star="${i}">★</button>
+          `).join("")}
+          <span class="pill">${v._rating}/5</span>
+        </div>
+
+        <div class="desc">${v.description}</div>
+      </div>
+      <div class="footer">
+        <span>${"ID: " + v.id}</span>
+        <span>${v.date}</span>
+      </div>
+    </article>
+  `).join("");
+
+  $("#empty").style.display = list.length ? "none" : "block";
+  $("#countMeta").textContent = `${list.length} de ${VIDEOS.length} vídeos`;
+
+  $("#activeFilters").textContent =
+    [type && `tipo:${type}`, style && `estilo:${style}`, teacher && `profe:${teacher}`, level && `nivel:${level}`, minRating && `★≥${minRating}`]
+      .filter(Boolean).join(" · ") || "Sin filtros";
+}
+
+$("#grid").addEventListener("click", e=>{
+  const star = e.target.closest(".star");
+  if(!star) return;
+  const card = e.target.closest(".card");
+  const id = card.dataset.id;
+  const value = +star.dataset.star;
+  const r = loadRatings();
+  r[id] = value;
+  saveRatings(r);
+  render();
+});
+
+["q","type","style","teacher","level","minRating","sort"]
+  .forEach(id=>{
+    $("#"+id).addEventListener("input", render);
+    $("#"+id).addEventListener("change", render);
+  });
+
+$("#reset").onclick = ()=>{
+  document.querySelectorAll("input,select").forEach(e=>e.value="");
+  $("#minRating").value = "0";
+  $("#sort").value = "date_desc";
+  render();
+};
+
+(async function init(){
+  VIDEOS = await loadVideos();
+  buildSelect("#type", unique(VIDEOS.map(v=>v.type)), "Todos");
+  buildSelect("#style", unique(VIDEOS.map(v=>v.style)), "Todos");
+  buildSelect("#teacher", unique(VIDEOS.map(v=>v.teacher)), "Todos");
+  buildSelect("#level", unique(VIDEOS.map(v=>v.level)), "Todos");
+  render();
+})();
+</script>
+</body>
+</html>
