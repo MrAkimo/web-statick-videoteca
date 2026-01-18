@@ -1,3 +1,5 @@
+# Comando para ejecutar
+# powershell -ExecutionPolicy Bypass -File tools/make-thumbs.ps1 -InputDir "I:\Mi unidad\Clases de baile" -Crop16x9
 param(
   [Parameter(Mandatory=$true)]
   [string]$InputDir,
